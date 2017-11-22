@@ -1,6 +1,5 @@
 <template>
     <div class="pos">
-        Hello CashierDesk!
     </div>
 </template>
 
