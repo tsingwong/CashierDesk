@@ -59,24 +59,42 @@
     </div>
 
     <div class="goods-type">
-        <el-tabs type="border-card">
+        <el-tabs type="border-card" value="1">
             <el-tab-pane label="汉堡" name="1">
                 <ul class="cook-list">
                     <li v-for="food in type0Foods">
                         <span class="food-img"><img :src="food.goodsImg" width="100%" /></span>
                         <span class="food-name">{{food.goodsName}}</span>
-                        <price class="food-price">￥{{food.price}}元</price>
+                        <span class="food-price">￥{{food.price}}元</span>
                     </li>
                 </ul>
             </el-tab-pane>
             <el-tab-pane label="小吃" name="2">
-                小吃
+                <ul class="cook-list">
+                    <li v-for="food in type1Foods">
+                        <span class="food-img"><img :src="food.goodsImg" width="100%" /></span>
+                        <span class="food-name">{{food.goodsName}}</span>
+                        <span class="food-price">￥{{food.price}}元</span>
+                    </li>
+                </ul>
             </el-tab-pane>
             <el-tab-pane label="饮料" name="3">
-                汉堡
+                <ul class="cook-list">
+                    <li v-for="food in type2Foods">
+                        <span class="food-img"><img :src="food.goodsImg" width="100%" /></span>
+                        <span class="food-name">{{food.goodsName}}</span>
+                        <span class="food-price">￥{{food.price}}元</span>
+                    </li>
+                </ul>
             </el-tab-pane>
             <el-tab-pane label="套餐" name="4">
-                汉堡
+                <ul class="cook-list">
+                    <li v-for="food in type3Foods">
+                        <span class="food-img"><img :src="food.goodsImg" width="100%" /></span>
+                        <span class="food-name">{{food.goodsName}}</span>
+                        <span class="food-price">￥{{food.price}}元</span>
+                    </li>
+                </ul>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -90,14 +108,31 @@
     export default {
         name: 'pos',
         created() {
-            axios.get('http://jspang.com/DemoApi/oftenGoods.php')
+            axios.get('http://localhost:8083/commongoods')
                 .then(res => {
                     // eslint-disable-next-line
                     console.log(res);
+                    this.commongoods = res.data;
                 })
                 .catch(err => {
                     // eslint-disable-next-line
                     console.log(err);
+                    alert('NetWork Error');
+                });
+            axios.get('http://localhost:8083/typeGoods')
+                .then(res => {
+                    // eslint-disable-next-line
+                    console.log(res);
+
+                    this.type0Foods = res.data[0];
+                    this.type1Foods = res.data[1];
+                    this.type2Foods = res.data[2];
+                    this.type3Foods = res.data[3];
+                })
+                .catch(err => {
+                    // eslint-disable-next-line
+                    console.log(err);
+                    alert('NetWork Error');
                 });
         },
         data() {
