@@ -1,0 +1,4 @@
+[ { goodsId: 2, goodName: '田园鸡腿堡', price: 15, count: 1 },
+  { goodsId: 3, goodName: '和风汉堡', price: 15, count: 1 },
+  { goodsId: 5, goodName: '脆皮炸鸡腿', price: 20, count: 1 },
+  { goodsId: 7, goodName: '可乐大杯', price: 10, count: 1 } ]

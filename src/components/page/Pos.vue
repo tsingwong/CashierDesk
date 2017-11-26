@@ -130,7 +130,7 @@
                 });
             this.tableData = window.localStorage
                 && localStorage.getItem('order') && JSON.parse(localStorage.getItem('order'));
-            (this.tableData === 'null' || this.tableData.length === 0) && (this.tableData = []);
+            (this.tableData === null || this.tableData.length === 0) && (this.tableData = []);
             setInterval(this.timer, 30000);
         },
         data() {
