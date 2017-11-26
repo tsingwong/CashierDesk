@@ -27,13 +27,13 @@
 </el-table>
 <div class="total"><span>数量：<small></small>{{totalCount}}</span> <span><small>金额：</small>{{totalMoney}}元</span></div>
 <div class="pos-btn">
-    <el-button type="primary">
+    <el-button type="primary" @click="order">
         挂单
     </el-button>
-    <el-button type="warning">
+    <el-button type="warning" @click="delAllGood">
         删除
     </el-button>
-    <el-button type="success">
+    <el-button type="success" @click="checkout">
         结账
     </el-button>
 </div>
@@ -179,23 +179,53 @@
                 }
                 this.total();
             },
-            delSingleGood (goods) {
+            delSingleGood(goods) {
                 const index = this.tableData.indexOf(goods);
                 goods.count -= 1;
-                goods.count === 0
-                && index > -1
-                && this.tableData.splice(index, 1);
+                goods.count === 0 &&
+                    index > -1 &&
+                    this.tableData.splice(index, 1);
                 this.total();
             },
-            total () {
+            delAllGood() {
+                this.tableData = [];
+                this.total();
+            },
+            total() {
                 this.totalCount = 0;
                 this.totalMoney = 0;
-                this.tableData.length
-                && this.tableData.forEach((element) => {
-                    this.totalCount += element.count;
-                    this.totalMoney += element.count * element.price;
-                });
-            }   
+                this.tableData.length &&
+                    this.tableData.forEach((element) => {
+                        this.totalCount += element.count;
+                        this.totalMoney += element.count * element.price;
+                    });
+            },
+            order() {
+                if (this.tableData.length > 0) {
+                    axios.post('http://localhost:8083/order', this.tableData)
+                        .then(res => {
+                            // eslint-disable-next-line
+                            res.status === 200 && this.checkout();
+                        })
+                        .catch(err => {
+                            // eslint-disable-next-line
+                            console.log(err);
+                        });
+                }
+            },
+            checkout() {
+                if (this.tableData.length > 0) {
+                    this.tableData = [];
+                    this.totalCount = 0;
+                    this.totalMoney = 0;
+                    this.$message({
+                        message: '结账成功',
+                        'type': 'success'
+                    });
+                } else {
+                    this.$message.error('购物车为空');
+                }
+            }
         }
     };
 
@@ -270,13 +300,16 @@
         padding-left: 10px;
         padding-top: 10px;
     }
+
     .total {
         text-align: left;
         background-color: #fff;
         padding: 10px;
         border-bottom: 1px solid #D3dce6;
     }
+
     .total span {
         margin-left: 10px;
     }
+
 </style>

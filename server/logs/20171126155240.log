@@ -1,0 +1,3 @@
+[ { goodsId: 4, goodName: '大包薯条', price: 18, count: 1 },
+  { goodsId: 5, goodName: '脆皮炸鸡腿', price: 20, count: 1 },
+  { goodsId: 8, goodName: '雪顶咖啡', price: 18, count: 1 } ]
