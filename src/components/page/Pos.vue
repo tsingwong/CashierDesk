@@ -51,7 +51,7 @@
         <div class="common-goods-title">常用商品</div>
         <div class="common-goods-list">
             <ul>
-                <li v-for="goods in commongoods" @click="addOrderList(goods)">
+                <li v-for="goods in commongoods" :key="goods.goodsId" @click="addOrderList(goods)">
                     <span>{{goods.goodsName}}</span>
                     <span class="common-goods-price">￥{{goods.price}}</span>
                 </li>
@@ -63,7 +63,7 @@
         <el-tabs type="border-card" value="1">
             <el-tab-pane label="汉堡" name="1">
                 <ul class="cook-list">
-                    <li v-for="food in type0Foods" @click="addOrderList(food)">
+                    <li v-for="food in type0Foods" :key="food.goodsId" @click="addOrderList(food)">
                         <span class="food-img"><img :src="food.goodsImg" width="100%" /></span>
                         <span class="food-name">{{food.goodsName}}</span>
                         <span class="food-price">￥{{food.price}}元</span>
@@ -72,7 +72,7 @@
             </el-tab-pane>
             <el-tab-pane label="小吃" name="2">
                 <ul class="cook-list">
-                    <li v-for="food in type1Foods" @click="addOrderList(food)">
+                    <li v-for="food in type1Foods" :key="food.goodsId" @click="addOrderList(food)">
                         <span class="food-img"><img :src="food.goodsImg" width="100%" /></span>
                         <span class="food-name">{{food.goodsName}}</span>
                         <span class="food-price">￥{{food.price}}元</span>
@@ -81,7 +81,7 @@
             </el-tab-pane>
             <el-tab-pane label="饮料" name="3">
                 <ul class="cook-list">
-                    <li v-for="food in type2Foods" @click="addOrderList(food)">
+                    <li v-for="food in type2Foods" :key="food.goodsId" @click="addOrderList(food)">
                         <span class="food-img"><img :src="food.goodsImg" width="100%" /></span>
                         <span class="food-name">{{food.goodsName}}</span>
                         <span class="food-price">￥{{food.price}}元</span>
@@ -90,7 +90,7 @@
             </el-tab-pane>
             <el-tab-pane label="套餐" name="4">
                 <ul class="cook-list">
-                    <li v-for="food in type3Foods" @click="addOrderList(food)">
+                    <li v-for="food in type3Foods" :key="food.goodsId" @click="addOrderList(food)">
                         <span class="food-img"><img :src="food.goodsImg" width="100%" /></span>
                         <span class="food-name">{{food.goodsName}}</span>
                         <span class="food-price">￥{{food.price}}元</span>
@@ -128,6 +128,10 @@
                 .catch(err => {
                     alert('NetWork Error');
                 });
+            this.tableData = window.localStorage
+                && localStorage.getItem('order') && JSON.parse(localStorage.getItem('order'));
+            (this.tableData === 'null' || this.tableData.length === 0) && (this.tableData = []);
+            setInterval(this.timer, 30000);
         },
         data() {
             return {
@@ -177,29 +181,18 @@
                     // newGood.count = 1;
                     this.tableData.push(newGoods);
                 }
-                this.total();
             },
             delSingleGood(goods) {
                 const index = this.tableData.indexOf(goods);
                 goods.count -= 1;
-                goods.count === 0 &&
-                    index > -1 &&
-                    this.tableData.splice(index, 1);
-                this.total();
+                goods.count === 0
+                    && index > -1
+                    && this.tableData.splice(index, 1);
             },
             delAllGood() {
                 this.tableData = [];
-                this.total();
             },
-            total() {
-                this.totalCount = 0;
-                this.totalMoney = 0;
-                this.tableData.length &&
-                    this.tableData.forEach((element) => {
-                        this.totalCount += element.count;
-                        this.totalMoney += element.count * element.price;
-                    });
-            },
+            total() {},
             order() {
                 if (this.tableData.length > 0) {
                     axios.post('http://localhost:8083/order', this.tableData)
@@ -225,7 +218,30 @@
                 } else {
                     this.$message.error('购物车为空');
                 }
+                window.localStorage && localStorage.removeItem('order');
+            },
+            timer() {
+                window.localStorage
+                    && localStorage.setItem('order', JSON.stringify(this.tableData))
+                    && (this.$message({
+                        message: '自动保存'
+                    }));
             }
+        },
+        watch: {
+            tableData: {
+                handler: function (val) {
+                    this.totalCount = 0;
+                    this.totalMoney = 0;
+                    val.length
+                        && val.forEach((element) => {
+                            this.totalCount += element.count;
+                            this.totalMoney += element.count * element.price;
+                        });
+                },
+                deep: true
+            }
+
         }
     };
 
